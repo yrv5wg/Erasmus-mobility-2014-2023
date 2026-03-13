@@ -1,0 +1,21 @@
+DATASET DOI (Figshare)
+======================
+
+10.6084/m9.figshare.31718764
+
+Full URL: https://doi.org/10.6084/m9.figshare.31718764
+
+Direct Figshare link: https://figshare.com/articles/dataset/31718764
+
+Citation:
+Kiss, D. & Kosztyán, Z. T. Erasmus+ KA2 Mobility Data 2014-2023: Enhanced with NUTS3 Regional Codes, ETER Institutional Characteristics, and Eurostat Socioeconomic Indicators. figshare https://doi.org/10.6084/m9.figshare.31718764 (2026).
+
+Dataset includes:
+- erasmus_final_complete.csv (Final enriched dataset, 206,448 × 70)
+- erasmus_with_nuts3.csv (Geocoded with NUTS3 codes)
+- erasmus_eter_linkage.csv (Institution-ETER mapping)
+- eter_ror_validation.csv (ROR validation report)
+- Erasmus-KA2-Mobility-Data.xlsx (Original source data)
+
+License: CC BY 4.0
+Published: 2026-03-13
