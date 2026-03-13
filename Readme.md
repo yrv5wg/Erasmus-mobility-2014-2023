@@ -85,47 +85,44 @@ pip install -r requirements.txt
 ## Data Availability
 
 ### Complete Dataset (Figshare)
-The full enriched dataset and all intermediate outputs are available on Figshare:
+The full enriched dataset and all source/output files are available on Figshare:
 
 **DOI:** [10.6084/m9.figshare.31718764](https://doi.org/10.6084/m9.figshare.31718764)
 
-Files included:
-- `erasmus_final_complete.csv` - Final enriched dataset (206,448 × 70)
-- `erasmus_with_nuts3.csv` - Geocoded with NUTS3 codes
-- `erasmus_eter_linkage.csv` - Institution-ETER mapping table
-- `eter_ror_validation.csv` - ROR validation report
-- `Erasmus-KA2-Mobility-Data.xlsx` - Original source data
-
 ### Source Files Required
-To run the pipeline, download these files separately:
+Download these files from our Figshare repository: [10.6084/m9.figshare.31718764](https://doi.org/10.6084/m9.figshare.31718764)
 
-1. **Erasmus Raw Data** (included in Figshare)
-   - File: `Erasmus-KA2-Mobility-Data.xlsx`
-   - Original source: [EU Open Data Portal](https://data.europa.eu)
+**Files included:**
+1. **Erasmus-KA2-Mobility-Data.xlsx** - Raw mobility data (EU Open Data Portal)
+2. **eter-export-selected.xlsx** - ETER database export
+3. **erasmus_with_nuts3.csv** - Geocoded with NUTS3 codes
+4. **erasmus_eter_linkage.csv** - Institution mapping table
+5. **erasmus_final_complete.csv** - Final enriched dataset ✅
 
-2. **NUTS3 Shapefile** (200 MB)
-   - Download: [Eurostat GISCO](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts)
-   - File: `NUTS_RG_01M_2021_3035.shp` (+ .dbf, .shx, .prj)
-
-3. **ETER Database** (requires registration)
-   - Download: [ETER Portal](https://www.eter-project.com/)
-   - File: `eter-export-selected-[timestamp].xlsx`
-
-4. **Eurostat Datasets** (auto-downloaded by notebook 05)
-   - GDP NUTS3: `nama_10r_3gdp`
-   - GDP NUTS2: `nama_10r_2gdp`
-   - GDP Country: `nama_10_gdp`
-   - Crime NUTS2: `crim_gen_reg`
-   - Population NUTS3: `demo_r_pjangrp3`
+**Additional files to download separately:**
+- **NUTS3 Shapefile**: [Eurostat GISCO](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts) - Download `NUTS_RG_01M_2021_3035.shp` (+ .dbf, .shx, .prj)
+- **ROR data**: Auto-downloaded by notebook 04
+- **Eurostat datasets**: Auto-downloaded by notebook 05
 
 ## Usage
 
-1. Download source files (NUTS3 shapefile, ETER database)
-2. Update file paths in each notebook's configuration cell
-3. Run notebooks sequentially (01 → 05)
-4. Each notebook produces outputs needed by the next
+### Quick Start
+1. Download source files from Figshare (links above)
+2. Download NUTS3 shapefile from Eurostat GISCO
+3. Update file paths in each notebook's configuration cell
+4. Run notebooks sequentially (01 → 05)
+5. Each notebook produces outputs needed by the next
 
 **Estimated runtime:** 2-4 hours total (including Eurostat downloads)
+
+### Configuration
+Each notebook has a configuration cell at the top. Update these paths before running:
+```python
+# Example from notebook 01
+ERASMUS_DATA_PATH = '/path/to/Erasmus-KA2-Mobility-Data.xlsx'
+NUTS3_SHAPEFILE_PATH = '/path/to/NUTS_RG_01M_2021_3035.shp'
+OUTPUT_DIR = '/path/to/output/directory/'
+```
 
 ## Key Statistics
 
@@ -149,6 +146,33 @@ To run the pipeline, download these files separately:
 - **ETER Matching:** 81.4% avg name similarity, 6.18 km avg distance
 - **ROR Validation:** 5.4% confirmed matches (107/1,986)
 - **Eurostat:** Annual time-series 2014-2023, matched by region × year
+
+## Data Variables
+
+### Core Variables (Original)
+- Project ID, Mobility ID
+- Sending/Receiving Organization, City, Country
+- Participant Profile, Duration, Start Month
+- Total Participants
+
+### Added: Geographic (Notebooks 01-02)
+- Sending/Receiving Latitude, Longitude
+- Sending/Receiving NUTS3, NUTS2, NUTS0 codes
+- Geocoding source, validation status
+
+### Added: Institutional (Notebook 03)
+- ETER ID, Name (English, National)
+- Academic staff (FTE)
+- Core revenues, Third-party funding (EUR)
+- Publications
+- Match distance, name similarity
+
+### Added: Socioeconomic (Notebook 05)
+- Year (extracted from mobility start month)
+- GDP per capita (NUTS3, NUTS2, Country-PPS)
+- Crime rate (recorded offences per 100k, NUTS2)
+- Population (NUTS3)
+- All indicators available for both sending and receiving locations
 
 ## Citation
 
@@ -180,49 +204,176 @@ To run the pipeline, download these files separately:
 ### Associated Publication
 *[To be added upon Scientific Data publication]*
 
+## Methodology Details
+
+### Geocoding Strategy (Notebook 01)
+- **Primary:** ArcGIS World Geocoding Service
+- **Fallback:** Nominatim (OpenStreetMap)
+- **Parallel processing:** 20 threads
+- **Spatial matching:** Haversine distance to NUTS3 centroids, then spatial join for final assignment
+
+### LLM Validation (Notebook 02)
+- **Model:** deepseek-r1:1.5b via Ollama
+- **Use case:** 228 locations with suspicious coordinates (>450 km from expected country)
+- **Notable corrections:** Heraklion Egypt→Crete (450km), Vitoria Brazil→Spain (8600km), Kos Indonesia→Greece (9400km)
+- **Manual corrections:** 525 hard-coded coordinate fixes for problematic locations
+- **Capital fallback:** Pre-validated NUTS3 codes for capital cities
+
+### ETER Matching (Notebook 03)
+- **Distance threshold:** 50 km maximum
+- **Name similarity:** Minimum 60% (token sort ratio)
+- **Combined score:** 60% name similarity + 40% proximity
+- **Quality metrics:** 81.4% avg similarity, 6.18 km avg distance
+
+### ROR Validation (Notebook 04)
+- **Purpose:** Independent validation of ETER matches
+- **Coverage:** 107/1,986 confirmed (5.4%)
+- **Criteria:** <5 km distance + >70% name similarity
+- **Result:** Validates matching precision, demonstrates ability to distinguish nearby institutions
+
+### Eurostat Integration (Notebook 05)
+- **Data sources:** 5 Eurostat datasets via API
+- **Matching logic:** NUTS region code + year
+- **GDP units:** EUR_HAB (NUTS3, NUTS2), PPS (country-level for comparability)
+- **Crime:** ICCS0101 total offences per 100k inhabitants
+- **Population:** Total (all ages, both sexes)
+- **Coverage period:** 2000-2024 (filtered to 2014-2023 for matching)
+
+## Comparison to Prior Work
+
+### Gadár et al. (2020) - Scientific Data
+- **Coverage:** 2008-2014
+- **Enhancements:** ETER + GRID institutional linkage
+- **Our extension:** 2014-2023, NUTS3 geocoding, Eurostat indicators
+
+### Väisänen et al. (2025) - Scientific Data
+- **Coverage:** 2014-2022, 2.19M movements
+- **Geocoding:** LAU + NUTS3 (Photon/Nominatim), 96% accuracy
+- **Limitations:** Systematic diacritic failures, no institutional data, no economic indicators
+- **Our advantages:** 99.94% geocoding accuracy, LLM validation, ETER linkage, pre-integrated Eurostat data
+
+## Research Applications
+
+This dataset enables analysis of:
+- Regional economic factors in student mobility patterns
+- Network analysis of inter-institutional collaborations
+- Impact of regional development on educational exchange
+- Temporal trends in mobility and socioeconomic correlations
+- Institutional characteristics and internationalization patterns
+- Crime and safety perceptions in mobility decisions
+- GDP disparities and mobility direction flows
+
+## Technical Notes
+
+- **Coordinate system:** WGS84 (EPSG:4326)
+- **NUTS version:** 2021 boundaries
+- **Missing data:** Coded as NaN in pandas, preserved in CSV output
+- **Year extraction:** From 'Mobility Start Month' field (YYYY-MM format)
+- **Merge validation:** All merges preserve original 206,448 record count (no row explosion)
+
+## Troubleshooting
+
+### Common Issues
+
+**"File not found" errors:**
+- Update file paths in configuration cells
+- Ensure all source files are downloaded
+
+**Geocoding fails:**
+- Check internet connection (ArcGIS and Nominatim require API access)
+- Nominatim rate limit: 1 request/second (built into code)
+
+**LLM validation not working:**
+- Install Ollama: https://ollama.ai
+- Pull model: `ollama pull deepseek-r1:1.5b`
+- Alternative: Skip notebook 02 and use pre-corrected file from Figshare
+
+**Eurostat download slow:**
+- First run downloads ~500 MB of data
+- Subsequent runs use cached CSV files
+- Patience required (15-20 minutes)
+
+**Memory errors:**
+- Dataset requires ~4 GB RAM
+- Close other applications
+- Consider using chunked processing for very large operations
+
 ## Authors
 
 **Dénes Kiss**  
 University of Pannonia, Faculty of Business and Economics  
+Veszprém, Hungary  
 📧 kiss.denes@gtk.uni-pannon.hu
 
 **Zsolt Tibor Kosztyán**  
 University of Pannonia, Faculty of Business and Economics  
+Veszprém, Hungary  
 📧 kosztyan.zsolt@gtk.uni-pannon.hu
 
 ## License
 
-- **Code:** MIT License
+- **Code:** MIT License (see LICENSE file)
 - **Data:** CC BY 4.0 (available on Figshare)
 
 ## Acknowledgments
 
-- **Data Sources:**
-  - European Commission - Erasmus+ Programme
-  - Eurostat GISCO - NUTS3 boundaries
-  - ETER Project - Institutional data
-  - Eurostat - Regional indicators
-  - ROR - Validation data
+### Data Sources
+- **European Commission** - Erasmus+ Programme mobility data
+- **Eurostat GISCO** - NUTS3 2021 administrative boundaries
+- **ETER Project** - European Tertiary Education Register
+- **Eurostat** - Regional socioeconomic indicators
+- **ROR** - Research Organization Registry (validation)
 
-- **Tools:**
-  - ArcGIS Geocoding Service
-  - Nominatim (OpenStreetMap)
-  - Ollama / deepseek-r1 for LLM validation
+### Tools & Services
+- **ArcGIS** - Primary geocoding service
+- **Nominatim/OpenStreetMap** - Fallback geocoding
+- **Ollama** - LLM inference for validation
+- **deepseek-r1** - Open-source language model
 
-## Related Work
+### Funding
+*[Add funding information if applicable]*
 
-This work extends:
-- Gadár et al. (2020) - *Scientific Data* - Erasmus 2008-2014
-- Väisänen et al. (2025) - *Scientific Data* - Erasmus 2014-2022 (geocoding only)
+## Version History
 
-Our dataset adds institutional and economic dimensions not available in prior work.
+- **v1.0** (2026-03-13): Initial release
+  - 206,448 records
+  - 70 variables
+  - 99.94% NUTS3 coverage
+  - Complete Eurostat integration
 
 ## Support
 
-For questions or issues:
-1. Open a GitHub issue
-2. Contact: kiss.denes@gtk.uni-pannon.hu
+For questions, issues, or collaboration inquiries:
+
+1. **GitHub Issues:** [Open an issue](https://github.com/yrv5wg/Erasmus-mobility-2014-2023/issues)
+2. **Email:** kiss.denes@gtk.uni-pannon.hu
+3. **Institution:** University of Pannonia, Faculty of Business and Economics
+
+## Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+Areas for contribution:
+- Additional validation methods
+- Alternative geocoding providers
+- Extended Eurostat indicators
+- Network analysis examples
+- Visualization tools
+
+## Related Resources
+
+- **Erasmus+ Programme:** https://erasmus-plus.ec.europa.eu/
+- **ETER Portal:** https://www.eter-project.com/
+- **Eurostat GISCO:** https://ec.europa.eu/eurostat/web/gisco
+- **NUTS Classification:** https://ec.europa.eu/eurostat/web/nuts
+- **ROR:** https://ror.org/
 
 ---
 
 **Status:** ✅ Dataset published | 📝 Paper under review | 🔄 Code maintained
+
+**Last updated:** 2026-03-13
