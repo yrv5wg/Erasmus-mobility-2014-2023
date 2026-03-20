@@ -5,12 +5,12 @@ title: "A Multilayer and Spatial Description of the Erasmus Mobility Network 201
 authors:
   - family-names: Kiss
     given-names: Dénes
-    orcid: "https://orcid.org/YOUR-ORCID-HERE"
+    orcid: "https://orcid.org/0009-0004-8828-1499"
     affiliation: "University of Pannonia"
     email: kiss.denes@gtk.uni-pannon.hu
   - family-names: Kosztyán
     given-names: Zsolt Tibor
-    orcid: "https://orcid.org/HIS-ORCID-HERE"
+    orcid: "https://orcid.org/0000-0001-7345-8336"
     affiliation: "University of Pannonia"
     email: kosztyan.zsolt@gtk.uni-pannon.hu
 repository-code: "https://github.com/yrv5wg/Erasmus-mobility-2014-2023"
