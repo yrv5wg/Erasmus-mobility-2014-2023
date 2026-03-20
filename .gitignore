@@ -1,0 +1,47 @@
+# Data files (too large for git - use Figshare)
+*.csv
+*.xlsx
+*.xls
+*.json
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outputs (distributed via Figshare)
+output/
+data/output/
+results/
+
+# Temporary files
+*.tmp
+*.bak
