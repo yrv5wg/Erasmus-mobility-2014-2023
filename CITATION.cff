@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this dataset or code, please cite it as below."
+type: dataset
+title: "A Multilayer and Spatial Description of the Erasmus Mobility Network 2014-2023: Enhanced with NUTS3 Regional Codes and Socioeconomic Indicators"
+authors:
+  - family-names: Kiss
+    given-names: Dénes
+    orcid: "https://orcid.org/YOUR-ORCID-HERE"
+    affiliation: "University of Pannonia"
+    email: kiss.denes@gtk.uni-pannon.hu
+  - family-names: Kosztyán
+    given-names: Zsolt Tibor
+    orcid: "https://orcid.org/HIS-ORCID-HERE"
+    affiliation: "University of Pannonia"
+    email: kosztyan.zsolt@gtk.uni-pannon.hu
+repository-code: "https://github.com/yrv5wg/Erasmus-mobility-2014-2023"
+url: "https://doi.org/10.6084/m9.figshare.31718764"
+doi: "10.6084/m9.figshare.31718764"
+date-released: 2025-03-20
+keywords:
+  - ERASMUS
+  - higher education mobility
+  - NUTS3
+  - regional coding
+  - spatial networks
+  - student mobility
+  - Eurostat
+  - ETER
+  - geocoding
+license: CC-BY-4.0
+version: 1.0.0
+preferred-citation:
+  type: article
+  title: "A Multilayer and Spatial Description of the Erasmus Mobility Network 2014-2023: Enhanced with NUTS3 Regional Codes and Socioeconomic Indicators"
+  authors:
+    - family-names: Kiss
+      given-names: Dénes
+    - family-names: Kosztyán
+      given-names: Zsolt Tibor
+  journal: "Scientific Data"
+  year: 2026
+  status: "submitted"
